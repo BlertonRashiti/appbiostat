@@ -6,7 +6,7 @@ output: pdf_document
 ---
 
 ```{r, echo = FALSE}
-library("StepReg")
+library("MASS")
 air <- read.delim("airline_costs.dat", header = FALSE, sep="")
 colnames(air) <- c("Airline", "LoF", "SoP", "DFT", "population", "TOC", "RTpAM", "TMlf",
                     "capacity", "totassets", "investments", "adjassets")
@@ -31,5 +31,7 @@ For each airline we have the following variables:
 ```{r, echo = F}
 fit <- lm(TOC ~ capacity + LoF + TMlf + DFT + population + SoP + totassets, data = air)
 fit2 <- lm(TOC ~ DFT, data = air)
-summary(fit2)
+a <- stepAIC(fit,fit2)
+summary(a)
+plot(a)
 ```
