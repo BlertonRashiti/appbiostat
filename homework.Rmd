@@ -1,0 +1,35 @@
+---
+title: "homework"
+author: "Omid Karimi, Evan Aguzzi, Luca Bracone, Blerton Rashiti"
+date: "2021-04-08 <-- doit changer"
+output: pdf_document
+---
+
+```{r, echo = FALSE}
+library("StepReg")
+air <- read.delim("airline_costs.dat", header = FALSE, sep="")
+colnames(air) <- c("Airline", "LoF", "SoP", "DFT", "population", "TOC", "RTpAM", "TMlf",
+                    "capacity", "totassets", "investments", "adjassets")
+```
+
+# Exploratory phase
+
+For each airline we have the following variables:
+
+* Airline, the name of the airline.
+* Total operating costs (`TOC`), normalized per revenue ton-mile (in cents).
+* Length of Flight (`LoF`), in miles.
+* Speed of Plane (`SoP`), in miles per hour.
+* Daily flight time per plane (`DFT`), in hours.
+* Population served(`population`).
+* Revenue tons per aircraft mile(`RTpAM`), a measure of how much revenue a company earns by transporting one ton of cargo for one mile.
+* Ton-Mile load factor (`TMlf`), the proportion of used space ..?
+* Available capacity (`capacity`), measured in ton-miles
+
+
+
+```{r, echo = F}
+fit <- lm(TOC ~ capacity + LoF + TMlf + DFT + population + SoP + totassets, data = air)
+fit2 <- lm(TOC ~ DFT, data = air)
+summary(fit2)
+```
