@@ -3,14 +3,48 @@ title: "homework"
 author: "Omid Karimi, Evan Aguzzi, Luca Bracone, Blerton Rashiti"
 date: "2021-04-08 <-- doit changer"
 output: pdf_document
+geometry: margin = 2.5cm
+fontsize: 12pt
+header-includes:
+    - \usepackage{titling}
+    - \usepackage{fancyhdr}
+    - \pagestyle{fancy}
+    - \fancyhead[L]{\theauthor}
 ---
 
 ```{r, echo = FALSE}
+set.seed(111222)
 library("MASS")
 air <- read.delim("airline_costs.dat", header = FALSE, sep="")
-colnames(air) <- c("Airline", "LoF", "SoP", "DFT", "population", "TOC", "RTpAM", "TMlf",
-                    "capacity", "totassets", "investments", "adjassets")
+colnames(air) <- c("Airline", "LoF", "SoP", "DFT", "population",
+                   "TOC", "RTpAM", "TMlf", "capacity", "totassets",
+                   "investments", "adjassets")
 ```
+
+# Introduction
+
+The costs of air transport include several parameters but they are not of the same importance. In this report, we use regression analysis to get the variables that have the most influence on the airline costs. Our dataset contains the following variables: Airline name, length of flight (in miles), speed of plane (miles per hour), daily flight time per plane (in hours), population served (1000s), total operating cost (in cents per revenue ton-mile), revenue tons per aircraft mile, ton-mile load factor (proportion), available capacity (Tons per mile), total assets  (\$100,000s), investments and special funds  (\$100,000s), adjusted assets  (\$100,000s).
+
+We will first have a look at the data in more depth. For this, we will plot every single one of the variables in function of the total operating cost since it is the variable that we want to explain.
+
+```{r, echo = FALSE, fig.show = "hold"}
+#air <- log(air[,-1])
+par( lty = "solid", mfcol = c(1,2) )
+plot(TOC ~ LoF, data = air, log = "y")
+plot(TOC ~ SoP, data = air, log = "y")
+plot(TOC ~ DFT, data = air, log = "y")
+plot(TOC ~ population, data = air, log = "y")
+plot(TOC ~ RTpAM, data = air, log = "y")
+plot(TOC ~ TMlf, data = air, log = "y")
+plot(TOC ~ capacity, data = air, log = "y")
+plot(TOC ~ totassets, data = air, log = "y")
+plot(TOC ~ investments, data = air, log = "y")
+plot(TOC ~ adjassets, data = air, log = "y")
+```
+
+We apply the logarithm to the total operation cost to obtain the above graphs.
+
+We can observe some linearity in the plots of the capacity, length of flight and ton-mile load factor, which means that they have a significant correlation with the cost.
 
 # Exploratory phase
 
@@ -27,11 +61,10 @@ For each airline we have the following variables:
 * Available capacity (`capacity`), measured in ton-miles
 
 
-
-```{r, echo = F}
-fit <- lm(TOC ~ capacity + LoF + TMlf + DFT + population + SoP + totassets, data = air)
-fit2 <- lm(TOC ~ DFT, data = air)
-a <- stepAIC(fit,fit2)
-summary(a)
-plot(a)
+```{r, echo = FALSE}
+fit <- lm(TOC ~ capacity + LoF + TMlf + DFT + population + SoP + totassets + investments + adjassets, data = air)
+fit3 <- lm(TOC ~ capacity + LoF + TMlf + DFT + population + SoP + totassets + investments + adjassets -1, data = air)
+fit2 <- lm(TOC ~ capacity + LoF + TMlf, data = air)
+fit4 <- lm(TOC ~ capacity + TMlf + SoP, data = air)
+anova(fit, fit2)
 ```
