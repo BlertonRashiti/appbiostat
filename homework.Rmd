@@ -21,7 +21,7 @@ colnames(air) <- c("Airline", "LoF", "SoP", "DFT", "population",
                    "investments", "adjassets")
 rownames(air) <- air$Airline
 air <- air[,-1]
-# air <- log(air)
+air <- log(air)
 ```
 
 # Introduction
@@ -66,15 +66,30 @@ For each airline we have the following variables:
 
 
 ```{r, echo = FALSE}
-fit <- lm(TOC ~ capacity + LoF + TMlf + DFT + population + SoP + totassets + investments + adjassets, data = air)
-fit3 <- lm(TOC ~ capacity + LoF + TMlf + DFT + population + SoP + totassets + investments + adjassets -1, data = air)
-fit2 <- lm(TOC ~ capacity + LoF + TMlf, data = air)
-fit4 <- lm(TOC ~ capacity + TMlf + SoP, data = air)
-fit5 <- lm(TOC ~ 0, data = air)
-fit6 <- stepAIC(fit)
-air.stdres <- rstandard(fit6)
+fit <- lm(TOC ~ capacity + LoF + TMlf + DFT + population + SoP + adjassets, data = air)
+fit.rev <- lm(RTpAM ~ . - TOC, data = air)
+# fit3 <- lm(TOC ~ capacity + LoF + TMlf + DFT + population + SoP + totassets + investments + adjassets -1, data = air)
+# fit2 <- lm(TOC ~ capacity + LoF + TMlf, data = air)
+# fit4 <- lm(TOC ~ capacity + TMlf + SoP, data = air)
+# fit5 <- lm(TOC ~ 0, data = air)
+fit.AICbackward <- stepAIC(fit, trace = FALSE)
+m <- lm(TOC ~ 1, air)
+fit.AICforward <- stepAIC(m, direction = "forward", scope = list(lower = m, upper = fit))
+fit.tocred <- lm(TOC ~ LoF + TMlf + capacity, data = air)
+```
+
+```{r}
+par(mfrow = c(2,2))
+# plot(fit.AICforward)
 ```
 
 ```{r, echo = FALSE}
-plot(fit6)
+# plot(fit6)
+par(mfrow = c(2,2))
+fit.AICforward.sr <- stdres(fit.AICforward)
+# plot(fit.AICforward.sr ~ air$TMlf)
+# plot(fit.AICforward.sr ~ air$DFT)
+plot(fit.AICforward)
+# air <- air[!(row.names(air) %in% "Wiggins"),]
+fit.rev2 <- lm(RTpAM ~ . - TOC - totassets, data = air)
 ```
