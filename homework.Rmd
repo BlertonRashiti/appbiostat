@@ -19,6 +19,9 @@ air <- read.delim("airline_costs.dat", header = FALSE, sep="")
 colnames(air) <- c("Airline", "LoF", "SoP", "DFT", "population",
                    "TOC", "RTpAM", "TMlf", "capacity", "totassets",
                    "investments", "adjassets")
+rownames(air) <- air$Airline
+air <- air[,-1]
+# air <- log(air)
 ```
 
 # Introduction
@@ -29,17 +32,18 @@ We will first have a look at the data in more depth. For this, we will plot ever
 
 ```{r, echo = FALSE, fig.show = "hold"}
 #air <- log(air[,-1])
-par( lty = "solid", mfcol = c(1,2) )
-plot(TOC ~ LoF, data = air, log = "y")
-plot(TOC ~ SoP, data = air, log = "y")
-plot(TOC ~ DFT, data = air, log = "y")
-plot(TOC ~ population, data = air, log = "y")
-plot(TOC ~ RTpAM, data = air, log = "y")
-plot(TOC ~ TMlf, data = air, log = "y")
-plot(TOC ~ capacity, data = air, log = "y")
-plot(TOC ~ totassets, data = air, log = "y")
-plot(TOC ~ investments, data = air, log = "y")
-plot(TOC ~ adjassets, data = air, log = "y")
+# par( lty = "solid", mfcol = c(1,2) )
+# plot(TOC ~ LoF, data = air, log = "y")
+# plot(TOC ~ SoP, data = air, log = "y")
+# plot(TOC ~ DFT, data = air, log = "y")
+# plot(TOC ~ population, data = air, log = "y")
+# plot(TOC ~ RTpAM, data = air, log = "y")
+# plot(TOC ~ TMlf, data = air, log = "y")
+# plot(TOC ~ capacity, data = air, log = "y")
+# plot(TOC ~ totassets, data = air, log = "y")
+# plot(TOC ~ investments, data = air, log = "y")
+# plot(TOC ~ adjassets, data = air, log = "y")
+pairs(air)
 ```
 
 We apply the logarithm to the total operation cost to obtain the above graphs.
@@ -66,5 +70,11 @@ fit <- lm(TOC ~ capacity + LoF + TMlf + DFT + population + SoP + totassets + inv
 fit3 <- lm(TOC ~ capacity + LoF + TMlf + DFT + population + SoP + totassets + investments + adjassets -1, data = air)
 fit2 <- lm(TOC ~ capacity + LoF + TMlf, data = air)
 fit4 <- lm(TOC ~ capacity + TMlf + SoP, data = air)
-anova(fit, fit2)
+fit5 <- lm(TOC ~ 0, data = air)
+fit6 <- stepAIC(fit)
+air.stdres <- rstandard(fit6)
+```
+
+```{r, echo = FALSE}
+plot(fit6)
 ```
